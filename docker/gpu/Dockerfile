@@ -1,5 +1,6 @@
 FROM tensorflow/tensorflow:1.3.0-gpu-py3
 
+RUN rm -rf /var/lib/apt/lists/*
 RUN apt update && \
     apt install -y --no-install-recommends \
         python3-tk \
@@ -8,13 +9,17 @@ RUN apt update && \
         git && \
     rm -rf /var/lib/apt/lists/* 
 
-ADD . /app
+#ADD . /app
+RUN mkdir /project
 
-WORKDIR /app
+COPY docker/requirements.txt /requirements.txt
 
-RUN pip3 install -r docker/requirements.txt
+WORKDIR /project
 
-ENV PYTHONPATH=/app
+#RUN pip3 install -r /app/docker/requirements.txt
+RUN pip3 install -r /requirements.txt
+
+ENV PYTHONPATH=/project
 
 # TensorBoard
 EXPOSE 6006

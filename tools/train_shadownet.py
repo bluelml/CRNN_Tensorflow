@@ -15,6 +15,11 @@ import time
 import numpy as np
 import argparse
 
+import sys
+from os import path
+CWD = path.realpath(path.dirname(__file__))
+sys.path.append(path.join(CWD, '../'))
+
 from crnn_model import crnn_model
 from local_utils import data_utils, log_utils
 from global_configuration import config
