@@ -7,6 +7,7 @@ docker build -t crnn-tf:gpu -f docker/gpu/Dockerfile .
 ```
 docker run --runtime=nvidia -ti -v ${PWD}:/project -v /disk3/pub-data/vgg-data-text:/data -v /usr/lib64/nvidia:/usr/local/nvidia/lib64 crnn-tf:gpu /bin/bash -i
 ```
+Note: this 90K dataset is on SH server
 
 ## generate dataset
 ```
