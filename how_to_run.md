@@ -13,6 +13,20 @@ Note: this 90K dataset is on SH server
 ```
 tools/gen_90k_data.py --input_dir /data/mnt/ramdisk/max/90kDICT32px --output_dir vgg_data
 ```
+This script is for 90K dataset. If using other dataset, please make sure the out folder in following struct:
+```
+rootpath
+     --Train
+         -- subdir
+              -- xx.jpg
+              -- xx.jpg
+         -- sample.txt
+     --Test
+         -- subdir
+              -- xx.jpg
+              -- xx.jpg
+         -- sample.txt 
+``` 
 
 ## generate tfrecords
 ```
