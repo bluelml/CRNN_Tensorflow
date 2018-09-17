@@ -6,8 +6,11 @@ from glob import glob
 from random import shuffle
 from PIL import Image
 from PIL import ImageFile
+from PIL import ImageEnhance
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 import json
+import numpy as np
+import copy
 
 
 def save_annotation(f, fpath):
@@ -18,12 +21,68 @@ def save_annotation(f, fpath):
     f.write('\n')
 
 
+def enhance_img_color(in_data, dataset):
+    data = copy.deepcopy(in_data)
+    data['img'] = ImageEnhance.Color(data['img']).enhance(0.1)
+    dataset.append(data)
+    data['img'] = ImageEnhance.Color(data['img']).enhance(0.8)
+    dataset.append(data)
+    data['img'] = ImageEnhance.Color(data['img']).enhance(2.0)
+    dataset.append(data)
+
+
+def enhance_img_bright(in_data, dataset):
+    data = copy.deepcopy(in_data)
+    data['img'] = ImageEnhance.Brightness(data['img']).enhance(0.1)
+    dataset.append(data)
+    data['img'] = ImageEnhance.Brightness(data['img']).enhance(0.8)
+    dataset.append(data)
+    data['img'] = ImageEnhance.Brightness(data['img']).enhance(2.0)
+    dataset.append(data)
+
+
+def enhance_img_contrast(in_data, dataset):
+    data = copy.deepcopy(in_data)
+    data['img'] = ImageEnhance.Contrast(data['img']).enhance(0.1)
+    dataset.append(data)
+    data['img'] = ImageEnhance.Contrast(data['img']).enhance(0.8)
+    dataset.append(data)
+    data['img'] = ImageEnhance.Contrast(data['img']).enhance(2.0)
+    dataset.append(data)
+
+
+def enhance_img_split(in_data, dataset):
+    data = copy.deepcopy(in_data)
+    r, g, b = data['img'].split()
+    data['img'] = r
+    dataset.append(data)
+    data['img'] = g
+    dataset.append(data)
+    data['img'] = b
+    dataset.append(data)
+
+
+def enhance_img_salt(in_data, dataset):
+    data = copy.deepcopy(in_data)
+    img = np.array(data['img'])
+    rows, cols, dims = img.shape
+
+    for i in range(int((rows*cols)/0.05)):
+        x = np.random.randint(0, rows)
+        y = np.random.randint(0, cols)
+        img[x, y, :] = 255
+
+    data['img'] = Image.fromarray(img)
+    dataset.append(data)
+
+
 def collect_data(label_file, img_dir):
     data_set = []
     with open(label_file, 'r') as f:
         for line in f:
             info = json.loads(line.strip())
             fn = path.join(img_dir, str(info['photo_id'])+'.jpg')
+            print(fn)
             if not path.exists(fn):
                 continue
             with Image.open(fn) as mf:
@@ -31,9 +90,15 @@ def collect_data(label_file, img_dir):
                     # bbox = {left, top, right, bottom}
                     bbox = (int(item['left']), int(item['top']), int(item['left'])+int(item['width']), int(item['top'])+int(item['height']))
                     bbox = (int(item['left']), int(item['top']), int(item['left'])+int(item['width']), int(item['top'])+int(item['height']))
+                    # original data
                     img = mf.crop(bbox)
                     data = dict(img=img, label=item['label'])
                     data_set.append(data)
+                    enhance_img_color(data, data_set)
+                    enhance_img_bright(data, data_set)
+                    enhance_img_contrast(data, data_set)
+                    enhance_img_split(data, data_set)
+                    enhance_img_salt(data, data_set)
 
     print(len(data_set))
     return data_set
