@@ -22,3 +22,8 @@ python tools/write_text_features.py --dataset_dir bib_data --save_dir bib_tfreco
 ```
 python tools/train_shadownet.py --dataset_dir bib_tfrecords
 ```
+
+# test
+```
+python tools/test_shadownet.py --dataset_dir bib_tfrecords --weights_path model/shadownet/shadownet_2018-09-20-12-19-09.ckpt-19288
+```

@@ -7,6 +7,7 @@ from random import shuffle
 from PIL import Image
 from PIL import ImageFile
 from PIL import ImageEnhance
+from PIL import ImageOps
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 import json
 import numpy as np
@@ -76,7 +77,14 @@ def enhance_img_salt(in_data, dataset):
     dataset.append(data)
 
 
-def collect_data(label_file, img_dir):
+def enhance_img_contrary(in_data, dataset):
+    data = copy.deepcoy(in_data)
+    img = ImageOps.invert(data['img'])
+    data['img'] = img
+    dataset.append(data)
+
+
+def collect_data(label_file, img_dir, enhance=0):
     data_set = []
     with open(label_file, 'r') as f:
         for line in f:
@@ -94,11 +102,12 @@ def collect_data(label_file, img_dir):
                     img = mf.crop(bbox)
                     data = dict(img=img, label=item['label'])
                     data_set.append(data)
-                    enhance_img_color(data, data_set)
-                    enhance_img_bright(data, data_set)
-                    enhance_img_contrast(data, data_set)
-                    enhance_img_split(data, data_set)
-                    enhance_img_salt(data, data_set)
+                    if enhance:
+                        enhance_img_color(data, data_set)
+                        enhance_img_bright(data, data_set)
+                        enhance_img_contrast(data, data_set)
+                        enhance_img_split(data, data_set)
+                        enhance_img_salt(data, data_set)
 
     print(len(data_set))
     return data_set
