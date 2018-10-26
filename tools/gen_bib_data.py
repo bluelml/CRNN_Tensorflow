@@ -94,6 +94,10 @@ def collect_data(label_file, img_dir, enhance=0):
             if not path.exists(fn):
                 continue
             with Image.open(fn) as mf:
+                img_width = int(info['task_result'].get('imageWidth', '0'))
+                img_height = int(info['task_result'].get('imageHeight', '0'))
+                if img_width > 0:
+                    mf = mf.resize((img_width, img_height))
                 for item in info['task_result'].get('boxes', []):
                     # bbox = {left, top, right, bottom}
                     bbox = (int(item['left']), int(item['top']), int(item['left'])+int(item['width']), int(item['top'])+int(item['height']))
@@ -172,6 +176,7 @@ if __name__ == "__main__":
     bib_data_file = path.join(input_dir, raw_data_file)
     bib_data_dir = path.join(input_dir, raw_data_dir)
 
+    # dataset = collect_data(bib_data_file, bib_data_dir, enhance=1)
     dataset = collect_data(bib_data_file, bib_data_dir)
 
     if shf:
